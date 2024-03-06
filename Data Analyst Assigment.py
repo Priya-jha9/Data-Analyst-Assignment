@@ -1,0 +1,553 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "def505b7",
+   "metadata": {},
+   "source": [
+    "# First, we'll load the dataset and import the necessary libraries:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 95,
+   "id": "00b7ac3c",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Requirement already satisfied: plotly in c:\\users\\lenovo\\anaconda3\\lib\\site-packages (5.19.0)\n",
+      "Requirement already satisfied: tenacity>=6.2.0 in c:\\users\\lenovo\\anaconda3\\lib\\site-packages (from plotly) (8.2.3)\n",
+      "Requirement already satisfied: packaging in c:\\users\\lenovo\\anaconda3\\lib\\site-packages (from plotly) (20.9)\n",
+      "Requirement already satisfied: pyparsing>=2.0.2 in c:\\users\\lenovo\\anaconda3\\lib\\site-packages (from packaging->plotly) (2.4.7)\n",
+      "Requirement already satisfied: ipywidgets in c:\\users\\lenovo\\anaconda3\\lib\\site-packages (7.6.3)\n",
+      "Requirement already satisfied: jupyterlab-widgets>=1.0.0 in c:\\users\\lenovo\\anaconda3\\lib\\site-packages (from ipywidgets) (1.0.0)\n",
+      "Requirement already satisfied: widgetsnbextension~=3.5.0 in c:\\users\\lenovo\\anaconda3\\lib\\site-packages (from ipywidgets) (3.5.1)\n",
+      "Requirement already satisfied: ipython>=4.0.0 in c:\\users\\lenovo\\anaconda3\\lib\\site-packages (from ipywidgets) (7.22.0)\n",
+      "Requirement already satisfied: ipykernel>=4.5.1 in c:\\users\\lenovo\\anaconda3\\lib\\site-packages (from ipywidgets) (5.3.4)\n",
+      "Requirement already satisfied: nbformat>=4.2.0 in c:\\users\\lenovo\\anaconda3\\lib\\site-packages (from ipywidgets) (5.1.3)\n",
+      "Requirement already satisfied: traitlets>=4.3.1 in c:\\users\\lenovo\\anaconda3\\lib\\site-packages (from ipywidgets) (5.0.5)\n",
+      "Requirement already satisfied: tornado>=4.2 in c:\\users\\lenovo\\anaconda3\\lib\\site-packages (from ipykernel>=4.5.1->ipywidgets) (6.1)\n",
+      "Requirement already satisfied: jupyter-client in c:\\users\\lenovo\\anaconda3\\lib\\site-packages (from ipykernel>=4.5.1->ipywidgets) (6.1.12)\n",
+      "Requirement already satisfied: decorator in c:\\users\\lenovo\\anaconda3\\lib\\site-packages (from ipython>=4.0.0->ipywidgets) (5.0.6)\n",
+      "Requirement already satisfied: colorama in c:\\users\\lenovo\\anaconda3\\lib\\site-packages (from ipython>=4.0.0->ipywidgets) (0.4.4)\n",
+      "Requirement already satisfied: backcall in c:\\users\\lenovo\\anaconda3\\lib\\site-packages (from ipython>=4.0.0->ipywidgets) (0.2.0)\n",
+      "Requirement already satisfied: setuptools>=18.5 in c:\\users\\lenovo\\anaconda3\\lib\\site-packages (from ipython>=4.0.0->ipywidgets) (52.0.0.post20210125)\n",
+      "Requirement already satisfied: jedi>=0.16 in c:\\users\\lenovo\\anaconda3\\lib\\site-packages (from ipython>=4.0.0->ipywidgets) (0.17.2)\n",
+      "Requirement already satisfied: pygments in c:\\users\\lenovo\\anaconda3\\lib\\site-packages (from ipython>=4.0.0->ipywidgets) (2.8.1)\n",
+      "Requirement already satisfied: pickleshare in c:\\users\\lenovo\\anaconda3\\lib\\site-packages (from ipython>=4.0.0->ipywidgets) (0.7.5)\n",
+      "Requirement already satisfied: prompt-toolkit!=3.0.0,!=3.0.1,<3.1.0,>=2.0.0 in c:\\users\\lenovo\\anaconda3\\lib\\site-packages (from ipython>=4.0.0->ipywidgets) (3.0.17)\n",
+      "Requirement already satisfied: parso<0.8.0,>=0.7.0 in c:\\users\\lenovo\\anaconda3\\lib\\site-packages (from jedi>=0.16->ipython>=4.0.0->ipywidgets) (0.7.0)\n",
+      "Requirement already satisfied: jsonschema!=2.5.0,>=2.4 in c:\\users\\lenovo\\anaconda3\\lib\\site-packages (from nbformat>=4.2.0->ipywidgets) (3.2.0)\n",
+      "Requirement already satisfied: ipython-genutils in c:\\users\\lenovo\\anaconda3\\lib\\site-packages (from nbformat>=4.2.0->ipywidgets) (0.2.0)\n",
+      "Requirement already satisfied: jupyter-core in c:\\users\\lenovo\\anaconda3\\lib\\site-packages (from nbformat>=4.2.0->ipywidgets) (4.7.1)\n",
+      "Requirement already satisfied: attrs>=17.4.0 in c:\\users\\lenovo\\anaconda3\\lib\\site-packages (from jsonschema!=2.5.0,>=2.4->nbformat>=4.2.0->ipywidgets) (20.3.0)\n",
+      "Requirement already satisfied: six>=1.11.0 in c:\\users\\lenovo\\anaconda3\\lib\\site-packages (from jsonschema!=2.5.0,>=2.4->nbformat>=4.2.0->ipywidgets) (1.15.0)\n",
+      "Requirement already satisfied: pyrsistent>=0.14.0 in c:\\users\\lenovo\\anaconda3\\lib\\site-packages (from jsonschema!=2.5.0,>=2.4->nbformat>=4.2.0->ipywidgets) (0.17.3)\n",
+      "Requirement already satisfied: wcwidth in c:\\users\\lenovo\\anaconda3\\lib\\site-packages (from prompt-toolkit!=3.0.0,!=3.0.1,<3.1.0,>=2.0.0->ipython>=4.0.0->ipywidgets) (0.2.5)\n",
+      "Requirement already satisfied: notebook>=4.4.1 in c:\\users\\lenovo\\anaconda3\\lib\\site-packages (from widgetsnbextension~=3.5.0->ipywidgets) (6.3.0)\n",
+      "Requirement already satisfied: Send2Trash>=1.5.0 in c:\\users\\lenovo\\anaconda3\\lib\\site-packages (from notebook>=4.4.1->widgetsnbextension~=3.5.0->ipywidgets) (1.5.0)\n",
+      "Requirement already satisfied: pyzmq>=17 in c:\\users\\lenovo\\anaconda3\\lib\\site-packages (from notebook>=4.4.1->widgetsnbextension~=3.5.0->ipywidgets) (20.0.0)\n",
+      "Requirement already satisfied: jinja2 in c:\\users\\lenovo\\anaconda3\\lib\\site-packages (from notebook>=4.4.1->widgetsnbextension~=3.5.0->ipywidgets) (2.11.3)\n",
+      "Requirement already satisfied: nbconvert in c:\\users\\lenovo\\anaconda3\\lib\\site-packages (from notebook>=4.4.1->widgetsnbextension~=3.5.0->ipywidgets) (6.0.7)\n",
+      "Requirement already satisfied: argon2-cffi in c:\\users\\lenovo\\anaconda3\\lib\\site-packages (from notebook>=4.4.1->widgetsnbextension~=3.5.0->ipywidgets) (20.1.0)\n",
+      "Requirement already satisfied: prometheus-client in c:\\users\\lenovo\\anaconda3\\lib\\site-packages (from notebook>=4.4.1->widgetsnbextension~=3.5.0->ipywidgets) (0.10.1)\n",
+      "Requirement already satisfied: terminado>=0.8.3 in c:\\users\\lenovo\\anaconda3\\lib\\site-packages (from notebook>=4.4.1->widgetsnbextension~=3.5.0->ipywidgets) (0.9.4)\n",
+      "Requirement already satisfied: python-dateutil>=2.1 in c:\\users\\lenovo\\anaconda3\\lib\\site-packages (from jupyter-client->ipykernel>=4.5.1->ipywidgets) (2.8.1)\n",
+      "Requirement already satisfied: pywin32>=1.0 in c:\\users\\lenovo\\anaconda3\\lib\\site-packages (from jupyter-core->nbformat>=4.2.0->ipywidgets) (227)\n",
+      "Requirement already satisfied: pywinpty>=0.5 in c:\\users\\lenovo\\anaconda3\\lib\\site-packages (from terminado>=0.8.3->notebook>=4.4.1->widgetsnbextension~=3.5.0->ipywidgets) (0.5.7)\n",
+      "Requirement already satisfied: cffi>=1.0.0 in c:\\users\\lenovo\\anaconda3\\lib\\site-packages (from argon2-cffi->notebook>=4.4.1->widgetsnbextension~=3.5.0->ipywidgets) (1.14.5)\n",
+      "Requirement already satisfied: pycparser in c:\\users\\lenovo\\anaconda3\\lib\\site-packages (from cffi>=1.0.0->argon2-cffi->notebook>=4.4.1->widgetsnbextension~=3.5.0->ipywidgets) (2.20)\n",
+      "Requirement already satisfied: MarkupSafe>=0.23 in c:\\users\\lenovo\\anaconda3\\lib\\site-packages (from jinja2->notebook>=4.4.1->widgetsnbextension~=3.5.0->ipywidgets) (1.1.1)\n",
+      "Requirement already satisfied: bleach in c:\\users\\lenovo\\anaconda3\\lib\\site-packages (from nbconvert->notebook>=4.4.1->widgetsnbextension~=3.5.0->ipywidgets) (3.3.0)\n",
+      "Requirement already satisfied: nbclient<0.6.0,>=0.5.0 in c:\\users\\lenovo\\anaconda3\\lib\\site-packages (from nbconvert->notebook>=4.4.1->widgetsnbextension~=3.5.0->ipywidgets) (0.5.3)\n",
+      "Requirement already satisfied: entrypoints>=0.2.2 in c:\\users\\lenovo\\anaconda3\\lib\\site-packages (from nbconvert->notebook>=4.4.1->widgetsnbextension~=3.5.0->ipywidgets) (0.3)\n",
+      "Requirement already satisfied: testpath in c:\\users\\lenovo\\anaconda3\\lib\\site-packages (from nbconvert->notebook>=4.4.1->widgetsnbextension~=3.5.0->ipywidgets) (0.4.4)\n",
+      "Requirement already satisfied: mistune<2,>=0.8.1 in c:\\users\\lenovo\\anaconda3\\lib\\site-packages (from nbconvert->notebook>=4.4.1->widgetsnbextension~=3.5.0->ipywidgets) (0.8.4)\n",
+      "Requirement already satisfied: pandocfilters>=1.4.1 in c:\\users\\lenovo\\anaconda3\\lib\\site-packages (from nbconvert->notebook>=4.4.1->widgetsnbextension~=3.5.0->ipywidgets) (1.4.3)\n",
+      "Requirement already satisfied: defusedxml in c:\\users\\lenovo\\anaconda3\\lib\\site-packages (from nbconvert->notebook>=4.4.1->widgetsnbextension~=3.5.0->ipywidgets) (0.7.1)\n",
+      "Requirement already satisfied: jupyterlab-pygments in c:\\users\\lenovo\\anaconda3\\lib\\site-packages (from nbconvert->notebook>=4.4.1->widgetsnbextension~=3.5.0->ipywidgets) (0.1.2)\n",
+      "Requirement already satisfied: async-generator in c:\\users\\lenovo\\anaconda3\\lib\\site-packages (from nbclient<0.6.0,>=0.5.0->nbconvert->notebook>=4.4.1->widgetsnbextension~=3.5.0->ipywidgets) (1.10)\n",
+      "Requirement already satisfied: nest-asyncio in c:\\users\\lenovo\\anaconda3\\lib\\site-packages (from nbclient<0.6.0,>=0.5.0->nbconvert->notebook>=4.4.1->widgetsnbextension~=3.5.0->ipywidgets) (1.5.1)\n",
+      "Requirement already satisfied: packaging in c:\\users\\lenovo\\anaconda3\\lib\\site-packages (from bleach->nbconvert->notebook>=4.4.1->widgetsnbextension~=3.5.0->ipywidgets) (20.9)\n",
+      "Requirement already satisfied: webencodings in c:\\users\\lenovo\\anaconda3\\lib\\site-packages (from bleach->nbconvert->notebook>=4.4.1->widgetsnbextension~=3.5.0->ipywidgets) (0.5.1)\n",
+      "Requirement already satisfied: pyparsing>=2.0.2 in c:\\users\\lenovo\\anaconda3\\lib\\site-packages (from packaging->bleach->nbconvert->notebook>=4.4.1->widgetsnbextension~=3.5.0->ipywidgets) (2.4.7)\n"
+     ]
+    }
+   ],
+   "source": [
+    "!pip install plotly\n",
+    "!pip install ipywidgets"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 96,
+   "id": "e4ce85f4",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import pandas as pd\n",
+    "import plotly.graph_objs as go\n",
+    "import plotly.express as px\n",
+    "from plotly.subplots import make_subplots\n",
+    "import ipywidgets as widgets\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 97,
+   "id": "22ee3858",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "df = pd.read_csv('NioPracticeUserbase.csv')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 59,
+   "id": "99580f51",
+   "metadata": {
+    "scrolled": false
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>User ID</th>\n",
+       "      <th>Subscription Type</th>\n",
+       "      <th>Monthly Revenue</th>\n",
+       "      <th>Join Date</th>\n",
+       "      <th>Last Payment Date</th>\n",
+       "      <th>Country</th>\n",
+       "      <th>Age</th>\n",
+       "      <th>Gender</th>\n",
+       "      <th>Device</th>\n",
+       "      <th>Plan Duration</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>1</td>\n",
+       "      <td>Basic</td>\n",
+       "      <td>10</td>\n",
+       "      <td>15-01-22</td>\n",
+       "      <td>10-06-23</td>\n",
+       "      <td>United States</td>\n",
+       "      <td>28</td>\n",
+       "      <td>Male</td>\n",
+       "      <td>Smartphone</td>\n",
+       "      <td>1 Month</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>2</td>\n",
+       "      <td>Premium</td>\n",
+       "      <td>15</td>\n",
+       "      <td>05-09-21</td>\n",
+       "      <td>22-06-23</td>\n",
+       "      <td>Canada</td>\n",
+       "      <td>35</td>\n",
+       "      <td>Female</td>\n",
+       "      <td>Tablet</td>\n",
+       "      <td>1 Month</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>3</td>\n",
+       "      <td>Standard</td>\n",
+       "      <td>12</td>\n",
+       "      <td>28-02-23</td>\n",
+       "      <td>27-06-23</td>\n",
+       "      <td>United Kingdom</td>\n",
+       "      <td>42</td>\n",
+       "      <td>Male</td>\n",
+       "      <td>Smart TV</td>\n",
+       "      <td>1 Month</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>4</td>\n",
+       "      <td>Standard</td>\n",
+       "      <td>12</td>\n",
+       "      <td>10-07-22</td>\n",
+       "      <td>26-06-23</td>\n",
+       "      <td>Australia</td>\n",
+       "      <td>51</td>\n",
+       "      <td>Female</td>\n",
+       "      <td>Laptop</td>\n",
+       "      <td>1 Month</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>5</td>\n",
+       "      <td>Basic</td>\n",
+       "      <td>10</td>\n",
+       "      <td>01-05-23</td>\n",
+       "      <td>28-06-23</td>\n",
+       "      <td>Germany</td>\n",
+       "      <td>33</td>\n",
+       "      <td>Male</td>\n",
+       "      <td>Smartphone</td>\n",
+       "      <td>1 Month</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>5</th>\n",
+       "      <td>6</td>\n",
+       "      <td>Premium</td>\n",
+       "      <td>15</td>\n",
+       "      <td>18-03-22</td>\n",
+       "      <td>27-06-23</td>\n",
+       "      <td>France</td>\n",
+       "      <td>29</td>\n",
+       "      <td>Female</td>\n",
+       "      <td>Smart TV</td>\n",
+       "      <td>1 Month</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>6</th>\n",
+       "      <td>7</td>\n",
+       "      <td>Standard</td>\n",
+       "      <td>12</td>\n",
+       "      <td>09-12-21</td>\n",
+       "      <td>25-06-23</td>\n",
+       "      <td>Brazil</td>\n",
+       "      <td>46</td>\n",
+       "      <td>Male</td>\n",
+       "      <td>Tablet</td>\n",
+       "      <td>1 Month</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>7</th>\n",
+       "      <td>8</td>\n",
+       "      <td>Basic</td>\n",
+       "      <td>10</td>\n",
+       "      <td>02-04-23</td>\n",
+       "      <td>24-06-23</td>\n",
+       "      <td>Mexico</td>\n",
+       "      <td>39</td>\n",
+       "      <td>Female</td>\n",
+       "      <td>Laptop</td>\n",
+       "      <td>1 Month</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>8</th>\n",
+       "      <td>9</td>\n",
+       "      <td>Standard</td>\n",
+       "      <td>12</td>\n",
+       "      <td>20-10-22</td>\n",
+       "      <td>23-06-23</td>\n",
+       "      <td>Spain</td>\n",
+       "      <td>37</td>\n",
+       "      <td>Male</td>\n",
+       "      <td>Smartphone</td>\n",
+       "      <td>1 Month</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>9</th>\n",
+       "      <td>10</td>\n",
+       "      <td>Premium</td>\n",
+       "      <td>15</td>\n",
+       "      <td>07-01-23</td>\n",
+       "      <td>22-06-23</td>\n",
+       "      <td>Italy</td>\n",
+       "      <td>44</td>\n",
+       "      <td>Female</td>\n",
+       "      <td>Smart TV</td>\n",
+       "      <td>1 Month</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "   User ID Subscription Type  Monthly Revenue Join Date Last Payment Date  \\\n",
+       "0        1             Basic               10  15-01-22          10-06-23   \n",
+       "1        2           Premium               15  05-09-21          22-06-23   \n",
+       "2        3          Standard               12  28-02-23          27-06-23   \n",
+       "3        4          Standard               12  10-07-22          26-06-23   \n",
+       "4        5             Basic               10  01-05-23          28-06-23   \n",
+       "5        6           Premium               15  18-03-22          27-06-23   \n",
+       "6        7          Standard               12  09-12-21          25-06-23   \n",
+       "7        8             Basic               10  02-04-23          24-06-23   \n",
+       "8        9          Standard               12  20-10-22          23-06-23   \n",
+       "9       10           Premium               15  07-01-23          22-06-23   \n",
+       "\n",
+       "          Country  Age  Gender      Device Plan Duration  \n",
+       "0   United States   28    Male  Smartphone       1 Month  \n",
+       "1          Canada   35  Female      Tablet       1 Month  \n",
+       "2  United Kingdom   42    Male    Smart TV       1 Month  \n",
+       "3       Australia   51  Female      Laptop       1 Month  \n",
+       "4         Germany   33    Male  Smartphone       1 Month  \n",
+       "5          France   29  Female    Smart TV       1 Month  \n",
+       "6          Brazil   46    Male      Tablet       1 Month  \n",
+       "7          Mexico   39  Female      Laptop       1 Month  \n",
+       "8           Spain   37    Male  Smartphone       1 Month  \n",
+       "9           Italy   44  Female    Smart TV       1 Month  "
+      ]
+     },
+     "execution_count": 59,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "df.head(10)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "be5429fa",
+   "metadata": {},
+   "source": [
+    "# User Demographics Visualization:"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "5faf3e3e",
+   "metadata": {},
+   "source": [
+    "Chose bar charts for user demographics as it's effective in showing comparisons."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "8da1d89c",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "def user_demographics(country):\n",
+    "    filtered_df = df[df['Country'] == country]\n",
+    "    gender_counts = filtered_df['Gender'].value_counts()\n",
+    "    \n",
+    "    fig = go.Figure([go.Bar(x=gender_counts.index, y=gender_counts.values)])\n",
+    "    fig.update_layout(title=f'Number of Users by Gender ({country})',\n",
+    "                      xaxis_title='Gender',\n",
+    "                      yaxis_title='Number of Users')\n",
+    "    fig.show()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "75c0ce2f",
+   "metadata": {},
+   "source": [
+    "# Subscription Overview:"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "b685fa58",
+   "metadata": {},
+   "source": [
+    "Utilized pie charts for subscription overview to display proportions."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 91,
+   "id": "f7306cd6",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "def subscription_overview(plan_duration):\n",
+    "    filtered_df = df[df['Plan Duration'] == plan_duration]\n",
+    "    subscription_counts = filtered_df['Subscription Type'].value_counts()\n",
+    "    \n",
+    "    fig = go.Figure(data=[go.Pie(labels=subscription_counts.index, values=subscription_counts.values)])\n",
+    "    fig.update_layout(title=f'Subscription Type Proportion ({plan_duration})')\n",
+    "    fig.show()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "eae99af0",
+   "metadata": {},
+   "source": [
+    "# Monthly Revenue Trend:"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "517a8223",
+   "metadata": {},
+   "source": [
+    "Employed line charts for monthly revenue trend to visualize trends over time."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 92,
+   "id": "0ecc6840",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "def monthly_revenue_trend(segment_by_type):\n",
+    "    if segment_by_type:\n",
+    "        fig = px.line(df, x='Join Date', y='Monthly Revenue', color='Subscription Type', \n",
+    "                      title='Total Monthly Revenue Over Time (Segmented by Subscription Type)')\n",
+    "    else:\n",
+    "        total_revenue = df.groupby('Join Date')['Monthly Revenue'].sum().reset_index()\n",
+    "        fig = px.line(total_revenue, x='Join Date', y='Monthly Revenue', \n",
+    "                      title='Total Monthly Revenue Over Time')\n",
+    "    fig.update_layout(xaxis_title='Date',\n",
+    "                      yaxis_title='Monthly Revenue')\n",
+    "    fig.show()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "789f32ad",
+   "metadata": {},
+   "source": [
+    "# Now, let's create the interactive widgets for filtering:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 93,
+   "id": "e9586c0f",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "country_dropdown = widgets.Dropdown(options=df['Country'].unique(), description='Country:')\n",
+    "plan_duration_dropdown = widgets.Dropdown(options=df['Plan Duration'].unique(), description='Plan Duration:')\n",
+    "segment_by_type_checkbox = widgets.Checkbox(value=False, description='Segment by Subscription Type')"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "f250b944",
+   "metadata": {},
+   "source": [
+    "# Finally, let's create the interaction with the widgets:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 94,
+   "id": "a942a0d9",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "application/vnd.jupyter.widget-view+json": {
+       "model_id": "18c2f85c085e42df91d0c56474758cac",
+       "version_major": 2,
+       "version_minor": 0
+      },
+      "text/plain": [
+       "interactive(children=(Dropdown(description='Country:', options=('United States', 'Canada', 'United Kingdom', '…"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    },
+    {
+     "data": {
+      "application/vnd.jupyter.widget-view+json": {
+       "model_id": "94e6831b885447f5a130a040fe2ae1a4",
+       "version_major": 2,
+       "version_minor": 0
+      },
+      "text/plain": [
+       "interactive(children=(Dropdown(description='Plan Duration:', options=('1 Month',), value='1 Month'), Output())…"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    },
+    {
+     "data": {
+      "application/vnd.jupyter.widget-view+json": {
+       "model_id": "204bc233d88a4df5836d10c21055b3a1",
+       "version_major": 2,
+       "version_minor": 0
+      },
+      "text/plain": [
+       "interactive(children=(Checkbox(value=False, description='Segment by Subscription Type'), Output()), _dom_class…"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    },
+    {
+     "data": {
+      "text/plain": [
+       "<function __main__.monthly_revenue_trend(segment_by_type)>"
+      ]
+     },
+     "execution_count": 94,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "widgets.interact(user_demographics, country=country_dropdown)\n",
+    "widgets.interact(subscription_overview, plan_duration=plan_duration_dropdown)\n",
+    "widgets.interact(monthly_revenue_trend, segment_by_type=segment_by_type_checkbox)\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "839ed452",
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "06af69f2",
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.8.8"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
